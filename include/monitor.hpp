@@ -142,6 +142,36 @@ void calculate_network_speed(
     double elapsed_seconds
 );
 
-// ================= OTHER =================
+// ================= UI =================
 
 void clear_screen();
+
+std::string make_progress_bar(double percent, int width = 20);
+std::string make_colored_progress_bar(double percent, int width = 20);
+std::string colorize_percent(double percent);
+
+void print_header(
+    int interval_seconds,
+    double cpu_usage,
+    const SystemInfo& system_info
+);
+
+void print_memory(
+    const MemInfo& mem,
+    double memory_usage,
+    uint64_t used_memory_kb
+);
+
+void print_swap(const MemInfo& mem);
+
+void print_disks(const std::vector<DiskInfo>& disks);
+
+void print_networks(const std::vector<NetworkInfo>& networks);
+
+void print_process_tables(
+    const std::vector<ProcessInfo>& current_processes
+);
+
+void print_process_tables_disabled();
+
+void print_footer();

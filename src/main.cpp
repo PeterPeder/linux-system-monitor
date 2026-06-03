@@ -7,44 +7,6 @@ struct ProgramOptions
     bool show_help = false;
 };
 
-void clear_screen()
-{
-    std::cout << "\033[2J\033[H";
-}
-
-static std::string make_progress_bar(double percent, int width = 20)
-{
-    if (percent < 0.0)
-    {
-        percent = 0.0;
-    }
-
-    if (percent > 100.0)
-    {
-        percent = 100.0;
-    }
-
-    int filled = static_cast<int>((percent / 100.0) * width);
-
-    std::string bar = "[";
-
-    for (int i = 0; i < width; ++i)
-    {
-        if (i < filled)
-        {
-            bar += "#";
-        }
-        else
-        {
-            bar += "-";
-        }
-    }
-
-    bar += "]";
-
-    return bar;
-}
-
 static void print_help()
 {
     std::cout << "Linux System Monitor\n\n";
@@ -175,153 +137,35 @@ int main(int argc, char* argv[])
 
             clear_screen();
 
-            std::cout << "===== Linux System Monitor =====\n\n";
+            print_header(
+                options.interval_seconds,
+                cpu_usage,
+                system_info
+            );
 
-            std::cout << std::fixed << std::setprecision(2);
+            print_memory(
+                mem,
+                memory_usage,
+                used_memory_kb
+            );
 
-            std::cout << "Update interval: "
-                      << options.interval_seconds
-                      << " sec\n";
+            print_swap(mem);
 
-            std::cout << "CPU usage: "
-                      << std::setw(6) << cpu_usage
-                      << " % "
-                      << make_progress_bar(cpu_usage)
-                      << '\n';
+            print_disks(disks);
 
-            std::cout << "Load average: "
-                      << system_info.load_average.one_min << " "
-                      << system_info.load_average.five_min << " "
-                      << system_info.load_average.fifteen_min << '\n';
-
-            std::cout << "Uptime: "
-                      << format_uptime(system_info.uptime_seconds)
-                      << "\n\n";
-
-            std::cout << "Memory:\n";
-            std::cout << "  Total:     " << kb_to_gb(mem.total_kb) << " GB\n";
-            std::cout << "  Used:      " << kb_to_gb(used_memory_kb) << " GB\n";
-            std::cout << "  Available: " << kb_to_gb(mem.available_kb) << " GB\n";
-            std::cout << "  Usage:     "
-                      << std::setw(6) << memory_usage
-                      << " % "
-                      << make_progress_bar(memory_usage)
-                      << "\n\n";
-
-            std::cout << "Swap:\n";
-            std::cout << "  Total: " << kb_to_gb(mem.swap_total_kb) << " GB\n";
-            std::cout << "  Free:  " << kb_to_gb(mem.swap_free_kb) << " GB\n\n";
-
-            std::cout << "Disk usage:\n";
-
-            std::cout << std::left
-                      << std::setw(16) << "MOUNT"
-                      << std::setw(10) << "FS"
-                      << std::setw(12) << "USED GB"
-                      << std::setw(12) << "TOTAL GB"
-                      << std::setw(10) << "USAGE %"
-                      << std::setw(24) << "BAR"
-                      << '\n';
-
-            std::cout << "-------------------------------------------------------------------\n";
-
-            for (const DiskInfo& disk : disks)
-            {
-                std::cout << std::left
-                          << std::setw(16) << disk.mount_point
-                          << std::setw(10) << disk.filesystem
-                          << std::setw(12) << bytes_to_gb(disk.used_bytes)
-                          << std::setw(12) << bytes_to_gb(disk.total_bytes)
-                          << std::setw(10) << disk.usage_percent
-                          << std::setw(24) << make_progress_bar(disk.usage_percent)
-                          << '\n';
-            }
-
-            std::cout << '\n';
-
-            std::cout << "Network:\n";
-
-            std::cout << std::left
-                      << std::setw(16) << "INTERFACE"
-                      << std::setw(18) << "DOWNLOAD KB/s"
-                      << std::setw(18) << "UPLOAD KB/s"
-                      << '\n';
-
-            std::cout << "----------------------------------------------------\n";
-
-            for (const NetworkInfo& network : current_networks)
-            {
-                std::cout << std::left
-                          << std::setw(16) << network.interface_name
-                          << std::setw(18) << network.download_kb_s
-                          << std::setw(18) << network.upload_kb_s
-                          << '\n';
-            }
-
-            std::cout << '\n';
+            print_networks(current_networks);
 
             if (options.show_processes)
             {
-                std::vector<ProcessInfo> top_cpu_processes =
-                    get_top_processes_by_cpu(current_processes, 10);
-
-                std::vector<ProcessInfo> top_memory_processes =
-                    get_top_processes_by_memory(current_processes, 10);
-
-                std::cout << "Total processes: "
-                          << current_processes.size()
-                          << "\n\n";
-
-                std::cout << "Top processes by CPU:\n";
-
-                std::cout << std::left
-                          << std::setw(8)  << "PID"
-                          << std::setw(22) << "NAME"
-                          << std::setw(12) << "CPU %"
-                          << std::setw(12) << "RAM MB"
-                          << '\n';
-
-                std::cout << "------------------------------------------------------\n";
-
-                for (const ProcessInfo& process : top_cpu_processes)
-                {
-                    std::cout << std::left
-                              << std::setw(8)  << process.pid
-                              << std::setw(22) << process.name
-                              << std::setw(12) << process.cpu_usage
-                              << std::setw(12) << kb_to_mb(process.memory_kb)
-                              << '\n';
-                }
-
-                std::cout << "\nTop processes by RAM:\n";
-
-                std::cout << std::left
-                          << std::setw(8)  << "PID"
-                          << std::setw(22) << "NAME"
-                          << std::setw(12) << "CPU %"
-                          << std::setw(12) << "RAM MB"
-                          << '\n';
-
-                std::cout << "------------------------------------------------------\n";
-
-                for (const ProcessInfo& process : top_memory_processes)
-                {
-                    std::cout << std::left
-                              << std::setw(8)  << process.pid
-                              << std::setw(22) << process.name
-                              << std::setw(12) << process.cpu_usage
-                              << std::setw(12) << kb_to_mb(process.memory_kb)
-                              << '\n';
-                }
-
+                print_process_tables(current_processes);
                 previous_processes = current_processes;
             }
             else
             {
-                std::cout << "Process tables: disabled\n";
+                print_process_tables_disabled();
             }
 
-            std::cout << "\nPress Ctrl + C to exit.\n";
+            print_footer();
 
             previous_cpu = current_cpu;
             previous_networks = current_networks;
