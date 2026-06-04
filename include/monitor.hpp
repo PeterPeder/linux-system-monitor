@@ -142,6 +142,19 @@ void calculate_network_speed(
     double elapsed_seconds
 );
 
+// ================= OPTIONS =================
+
+struct ProgramOptions
+{
+    int interval_seconds = 1;
+    bool show_processes = true;
+    bool show_help = false;
+    std::size_t top_process_count = 10;
+};
+
+ProgramOptions parse_arguments(int argc, char* argv[]);
+void print_help();
+
 // ================= UI =================
 
 void clear_screen();
@@ -169,7 +182,8 @@ void print_disks(const std::vector<DiskInfo>& disks);
 void print_networks(const std::vector<NetworkInfo>& networks);
 
 void print_process_tables(
-    const std::vector<ProcessInfo>& current_processes
+    const std::vector<ProcessInfo>& current_processes,
+    std::size_t top_process_count
 );
 
 void print_process_tables_disabled();

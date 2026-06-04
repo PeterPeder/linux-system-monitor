@@ -1,78 +1,5 @@
 #include "monitor.hpp"
 
-struct ProgramOptions
-{
-    int interval_seconds = 1;
-    bool show_processes = true;
-    bool show_help = false;
-};
-
-static void print_help()
-{
-    std::cout << "Linux System Monitor\n\n";
-
-    std::cout << "Usage:\n";
-    std::cout << "  ./linux_mon_main\n";
-    std::cout << "  ./linux_mon_main --interval 2\n";
-    std::cout << "  ./linux_mon_main --no-processes\n";
-    std::cout << "  ./linux_mon_main --help\n\n";
-
-    std::cout << "Options:\n";
-    std::cout << "  --help          Show this help message\n";
-    std::cout << "  --interval N    Update interval in seconds\n";
-    std::cout << "  --no-processes  Hide process tables\n";
-}
-
-static ProgramOptions parse_arguments(int argc, char* argv[])
-{
-    ProgramOptions options;
-
-    for (int i = 1; i < argc; ++i)
-    {
-        std::string argument = argv[i];
-
-        if (argument == "--help")
-        {
-            options.show_help = true;
-        }
-        else if (argument == "--no-processes")
-        {
-            options.show_processes = false;
-        }
-        else if (argument == "--interval")
-        {
-            if (i + 1 >= argc)
-            {
-                throw std::runtime_error("После --interval нужно указать число секунд");
-            }
-
-            std::string value = argv[i + 1];
-
-            try
-            {
-                options.interval_seconds = std::stoi(value);
-            }
-            catch (...)
-            {
-                throw std::runtime_error("Значение --interval должно быть числом");
-            }
-
-            if (options.interval_seconds <= 0)
-            {
-                throw std::runtime_error("Значение --interval должно быть больше 0");
-            }
-
-            ++i;
-        }
-        else
-        {
-            throw std::runtime_error("Неизвестный аргумент: " + argument);
-        }
-    }
-
-    return options;
-}
-
 int main(int argc, char* argv[])
 {
     try
@@ -157,7 +84,10 @@ int main(int argc, char* argv[])
 
             if (options.show_processes)
             {
-                print_process_tables(current_processes);
+                print_process_tables(
+                    current_processes,
+                    options.top_process_count
+                );
                 previous_processes = current_processes;
             }
             else

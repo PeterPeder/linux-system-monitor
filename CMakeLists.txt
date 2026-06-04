@@ -16,6 +16,7 @@ add_executable(linux_mon_main
     src/disk.cpp
     src/network.cpp
     src/ui.cpp
+    src/options.cpp
 )
 
 target_compile_options(linux_mon_main PRIVATE

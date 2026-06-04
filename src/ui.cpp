@@ -189,14 +189,15 @@ void print_networks(const std::vector<NetworkInfo>& networks)
 }
 
 void print_process_tables(
-    const std::vector<ProcessInfo>& current_processes
+    const std::vector<ProcessInfo>& current_processes,
+    std::size_t top_process_count
 )
 {
     std::vector<ProcessInfo> top_cpu_processes =
-        get_top_processes_by_cpu(current_processes, 10);
+        get_top_processes_by_cpu(current_processes, top_process_count);
 
     std::vector<ProcessInfo> top_memory_processes =
-        get_top_processes_by_memory(current_processes, 10);
+        get_top_processes_by_memory(current_processes, top_process_count);
 
     std::cout << "Total processes: "
               << current_processes.size()
