@@ -6,6 +6,8 @@ void print_help()
 
     std::cout << "Usage:\n";
     std::cout << "  ./linux_mon_main\n";
+    std::cout << "  ./linux_mon_main --tui\n";
+    std::cout << "  ./linux_mon_main --gui\n";
     std::cout << "  ./linux_mon_main --interval 2\n";
     std::cout << "  ./linux_mon_main --top 5\n";
     std::cout << "  ./linux_mon_main --no-processes\n";
@@ -13,6 +15,8 @@ void print_help()
 
     std::cout << "Options:\n";
     std::cout << "  --help          Show this help message\n";
+    std::cout << "  --tui           Run terminal graphical interface\n";
+    std::cout << "  --gui           Run desktop graphical interface\n";
     std::cout << "  --interval N    Update interval in seconds\n";
     std::cout << "  --top N         Number of processes in top tables\n";
     std::cout << "  --no-processes  Hide process tables\n";
@@ -29,6 +33,14 @@ ProgramOptions parse_arguments(int argc, char* argv[])
         if (argument == "--help")
         {
             options.show_help = true;
+        }
+        else if (argument == "--tui")
+        {
+            options.use_tui = true;
+        }
+        else if (argument == "--gui")
+        {
+            options.use_gui = true;
         }
         else if (argument == "--no-processes")
         {

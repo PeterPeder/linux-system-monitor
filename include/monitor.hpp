@@ -149,6 +149,8 @@ struct ProgramOptions
     int interval_seconds = 1;
     bool show_processes = true;
     bool show_help = false;
+    bool use_tui = false;
+    bool use_gui = false;
     std::size_t top_process_count = 10;
 };
 
@@ -189,3 +191,11 @@ void print_process_tables(
 void print_process_tables_disabled();
 
 void print_footer();
+
+// ================= TUI =================
+
+void run_tui(const ProgramOptions& options);
+
+// ================= GUI =================
+
+void run_gui(const ProgramOptions& options);

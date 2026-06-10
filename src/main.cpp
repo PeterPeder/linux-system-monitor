@@ -12,6 +12,18 @@ int main(int argc, char* argv[])
             return 0;
         }
 
+        if (options.use_tui)
+        {
+            run_tui(options);
+            return 0;
+        }
+
+        if (options.use_gui)
+        {
+            run_gui(options);
+            return 0;
+        }
+
         CpuTimes previous_cpu = read_cpu_times();
 
         std::vector<ProcessInfo> previous_processes;
